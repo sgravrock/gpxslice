@@ -53,6 +53,12 @@ gpxslice = {
 	},
 
 	createSlice: function(track, startIx, endIx) {
+		if (endIx < startIx) {
+			const tmp = endIx;
+			endIx = startIx;
+			startIx = tmp;
+		}
+
 		const pointsInSlice = track.pointEls.slice(startIx, endIx + 1);
 		const trkseg = track.dom.querySelector("trkseg");
 

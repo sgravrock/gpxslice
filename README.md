@@ -11,7 +11,6 @@ between them.
 To run the tests, simply open test/SpecRunner.html in a browser.
 
 Known issues:
-* If you move the start marker after the end marker you get an empty track.
 * Files with multiple track segments are not supported.
 * Because the metadata isn't updated, Strava will think that the new track is
 a duplicate of the original unless the original is deleted before the new one

@@ -83,5 +83,21 @@ describe('gpxslice', function() {
 			const pointEls = track.dom.querySelectorAll('trkpt');
 			expect(pointEls.length).toEqual(0);
 		});
+
+		it("accepts endpoints in either order", function() {
+			const gpxSrc = '<?xml version="1.0" encoding="UTF-8"?> <gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" xmlns="http://www.topografix.com/GPX/1/1"> ' +
+				'<trk> <trkseg> ' +
+				'<trkpt lat="47.6664020" lon="-122.3778910"/> ' +
+				'<trkpt lat="47.6663460" lon="-122.3778740"/>' +
+				'<trkpt lat="47.6663461" lon="-122.3778741"/>' +
+				'<trkpt lat="47.6663462" lon="-122.3778742"/>' +
+				'</trkseg> </trk> </gpx>';
+			const track = gpxslice.parseTrack(gpxSrc);
+
+			const resultXml1 = gpxslice.createSlice(track, 1, 2);
+			const resultXml2 = gpxslice.createSlice(track, 2, 1);
+
+			expect(resultXml2).toEqual(resultXml1);
+		});
 	});
 });
