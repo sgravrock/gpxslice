@@ -15,4 +15,3 @@ Known issues:
 * Because the metadata isn't updated, Strava will think that the new track is
 a duplicate of the original unless the original is deleted before the new one
 is uploaded.
-* The output contains lots of extra whitespace.

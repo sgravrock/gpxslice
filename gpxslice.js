@@ -67,7 +67,9 @@ gpxslice = {
 			trkseg.appendChild(p);
 		}
 
-		const xml = new XMLSerializer().serializeToString(track.dom);
+		const xml = new XMLSerializer()
+			.serializeToString(track.dom)
+			.replace(/\n\s*\n/m, '\n'); // collapse adjacent blank lines
 
 		for (let p of pointsInSlice) {
 			trkseg.removeChild(p);

@@ -99,5 +99,24 @@ describe('gpxslice', function() {
 
 			expect(resultXml2).toEqual(resultXml1);
 		});
+
+		it("removes extra whitespace from the output", function() {
+			const input = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+				'<gpx>\n' +
+				' <trk>\n' +
+				'  <trkseg>\n' +
+				'    <trkpt />\n' +
+				'    <trkpt />\n' +
+				'    <trkpt />\n' +
+				'    <trkpt />\n' +
+				'  </trkseg>\n' +
+				' </trk>\n' +
+				'</gpx>\n';
+			const track = gpxslice.parseTrack(input);
+
+			const output = gpxslice.createSlice(track, 1, 2);
+
+			expect(output).not.toMatch(/\n\s*\n/m);
+		})
 	});
 });
