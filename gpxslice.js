@@ -100,9 +100,11 @@ gpxslice = {
 
 	closestPoint: function(points, sample) {
 		const result = points.reduce(function(acc, p) {
-			// Manhattan distance is probably good enough.
-			const dist = Math.abs(sample.lat - p.lat) +
-				Math.abs(sample.lng - p.lon);
+			// Distances should be very small, so we can act as if the Earth
+			// is flat.
+			const latDist = Math.abs(sample.lat - p.lat),
+				lonDist = Math.abs(sample.lng - p.lon),
+				dist = Math.sqrt(latDist*latDist + lonDist*lonDist);
 
 			if (acc && acc.dist < dist) {
 				return acc;
