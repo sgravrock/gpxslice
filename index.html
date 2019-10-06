@@ -11,16 +11,33 @@
 				padding: 0;
 			}
 
-			#map { height: 100vh; }
 			#file { display: none; }
-			#map, #file { display: none; }
 			.init #file { display: inline; }
-			.showing-map #map { display: block; }
+
+			#main { display: none; }
+			.showing-map #main {
+				display: flex;
+				height: 100vh;
+			}
+
+			#controls { width: 200px; }
+
+			#map { flex: 1; }
+
+			label, button, textarea { display: block; }
 		</style>
 	</head>
 	<body class="init">
 		<input type="file" accept=".gpx" id="file" />
-		<div id="map"></div>
+		<div id="main">
+			<div id="controls">
+				<label>Start: <input type="text" name="start"></label>
+				<label>End: <input type="text" name="end"></label>
+				<button id="slice">Slice</button>
+				<textarea id="output"></textarea>
+			</div>
+			<div id="map"></div>
+		</div>
 		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
 				integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
 				crossorigin=""></script>
