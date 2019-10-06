@@ -34,8 +34,14 @@
 	}
 
 	function createMarker(input, track, map) {
-		const marker = L.marker(getLatLng());
+		const marker = L.marker(getLatLng(), {draggable: true});
 		marker.addTo(map);
+
+		marker.on("drag", function(e) {
+			const latLng = closestPoint(track, e.latlng);
+			marker.setLatLng(latLng);
+			input.value = track.indexOf(latLng);
+		});
 
 		input.addEventListener("change", function() {
 			marker.setLatLng(getLatLng());
@@ -93,5 +99,21 @@
 			lat: parseFloat(el.getAttribute('lat')),
 			lon: parseFloat(el.getAttribute('lon')),
 		};
+	}
+
+	function closestPoint(points, sample) {
+		const result = points.reduce(function(acc, p) {
+			// Manhattan distance is probably good enough.
+			const dist = Math.abs(sample.lat - p.lat) +
+				Math.abs(sample.lng - p.lon);
+
+			if (acc && acc.dist < dist) {
+				return acc;
+			} else {
+				return { p: p, dist: dist };
+			}
+		});
+
+		return result && result.p;
 	}
 }());
