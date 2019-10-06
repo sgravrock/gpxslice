@@ -1,30 +1,32 @@
-(function() {
-	document.querySelector("#file").addEventListener("change", function(e) {
-		e.target.files[0].text()
-			.then(function(text) {
-				init(parseTrack(text));
-			});
-	});
+gpxslice = {
+	boot: function() {
+		document.querySelector("#file").addEventListener("change", function(e) {
+			e.target.files[0].text()
+				.then(function(text) {
+					gpxslice.showEditor(gpxslice.parseTrack(text));
+				});
+		});
+	},
 
-	function init(track) {
+	showEditor: function(track) {
 		document.body.className = "showing-map";
-		const map = showMap(track.points);
+		const map = gpxslice.showMap(track.points);
 
 		let start = 0, end = track.points.length - 1;
-		createMarker(start, track.points, map, function(value) {
+		gpxslice.createMarker(start, track.points, map, function(value) {
 			start = value;
 		});
 
-		createMarker(end, track.points, map, function(value) {
+		gpxslice.createMarker(end, track.points, map, function(value) {
 			end = value;
 		});
 
 		document.querySelector("#slice").addEventListener("click", function() {
-			createSlice(track, start, end);
+			gpxslice.showSlice(track, start, end);
 		});
-	}
+	},
 
-	function showMap(points) {
+	showMap: function(points) {
 		const map = L.map('map');
 		const line = L.polyline(points, {color: 'red'});
 		line.addTo(map);
@@ -32,20 +34,25 @@
 		map.addLayer(new L.StamenTileLayer("terrain"));
 
 		return map;
-	}
+	},
 
-	function createMarker(initialIndex, track, map, onMove) {
+	createMarker: function(initialIndex, track, map, onMove) {
 		const marker = L.marker(track[initialIndex], {draggable: true});
 		marker.addTo(map);
 
 		marker.on("drag", function(e) {
-			const latLng = closestPoint(track, e.latlng);
+			const latLng = gpxslice.closestPoint(track, e.latlng);
 			marker.setLatLng(latLng);
 			onMove(track.indexOf(latLng));
 		});
-	}
+	},
 
-	function createSlice(track, startIx, endIx) {
+	showSlice: function(track, startIx, endIx) {
+		document.querySelector("#output").textContent =
+			gpxslice.createSlice(track, startIx, endIx);
+	},
+
+	createSlice: function(track, startIx, endIx) {
 		const pointsInSlice = track.pointEls.slice(startIx, endIx + 1);
 		const trkseg = track.dom.querySelector("trkseg");
 
@@ -53,15 +60,16 @@
 			trkseg.appendChild(p);
 		}
 
-		document.querySelector("#output").textContent = 
-			new XMLSerializer().serializeToString(track.dom);
+		const xml = new XMLSerializer().serializeToString(track.dom);
 
 		for (let p of pointsInSlice) {
 			trkseg.removeChild(p);
 		}
-	}
 
-	function parseTrack(src) {
+		return xml;
+	},
+
+	parseTrack: function(src) {
 		const dom = new DOMParser().parseFromString(src, 'application/xml');
 
 		if (dom.querySelector('parsererror')) {
@@ -81,18 +89,16 @@
 		return {
 			dom: dom,
 			pointEls: pointEls,
-			points: pointEls.map(translatePoint)
+			points: pointEls.map(function(el) {
+				return {
+					lat: parseFloat(el.getAttribute('lat')),
+					lon: parseFloat(el.getAttribute('lon')),
+				};
+			})
 		};
-	}
+	},
 
-	function translatePoint(el) {
-		return {
-			lat: parseFloat(el.getAttribute('lat')),
-			lon: parseFloat(el.getAttribute('lon')),
-		};
-	}
-
-	function closestPoint(points, sample) {
+	closestPoint: function(points, sample) {
 		const result = points.reduce(function(acc, p) {
 			// Manhattan distance is probably good enough.
 			const dist = Math.abs(sample.lat - p.lat) +
@@ -107,4 +113,4 @@
 
 		return result && result.p;
 	}
-}());
+};
