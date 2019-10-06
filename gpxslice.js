@@ -10,16 +10,17 @@
 		document.body.className = "showing-map";
 		const map = showMap(track.points);
 
-		const start = document.querySelector("[name=start]")
-		start.value = 0;
-		createMarker(start, track.points, map);
+		let start = 0, end = track.points.length - 1;
+		createMarker(start, track.points, map, function(value) {
+			start = value;
+		});
 
-		const end = document.querySelector("[name=end]");
-		end.value = track.points.length - 1;
-		createMarker(end, track.points, map);
+		createMarker(end, track.points, map, function(value) {
+			end = value;
+		});
 
 		document.querySelector("#slice").addEventListener("click", function() {
-			createSlice(track);
+			createSlice(track, start, end);
 		});
 	}
 
@@ -33,29 +34,19 @@
 		return map;
 	}
 
-	function createMarker(input, track, map) {
-		const marker = L.marker(getLatLng(), {draggable: true});
+	function createMarker(initialIndex, track, map, onMove) {
+		const marker = L.marker(track[initialIndex], {draggable: true});
 		marker.addTo(map);
 
 		marker.on("drag", function(e) {
 			const latLng = closestPoint(track, e.latlng);
 			marker.setLatLng(latLng);
-			input.value = track.indexOf(latLng);
+			onMove(track.indexOf(latLng));
 		});
-
-		input.addEventListener("change", function() {
-			marker.setLatLng(getLatLng());
-		});
-
-		function getLatLng() {
-			return track[parseInt(input.value, 10)];
-		}
 	}
 
-	function createSlice(track) {
-		const start = parseInt(document.querySelector("[name=start]").value, 10);
-		const end = parseInt(document.querySelector("[name=end]").value, 10);
-		const pointsInSlice = track.pointEls.slice(start, end + 1);
+	function createSlice(track, startIx, endIx) {
+		const pointsInSlice = track.pointEls.slice(startIx, endIx + 1);
 		const trkseg = track.dom.querySelector("trkseg");
 
 		for (let p of pointsInSlice) {

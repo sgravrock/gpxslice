@@ -24,15 +24,17 @@
 
 			#map { flex: 1; }
 
-			label, button, textarea { display: block; }
+			button, textarea { display: block; }
 		</style>
 	</head>
 	<body class="init">
 		<input type="file" accept=".gpx" id="file" />
 		<div id="main">
 			<div id="controls">
-				<label>Start: <input type="text" name="start"></label>
-				<label>End: <input type="text" name="end"></label>
+				<p>
+					Drag the markers to select the portion of the track that you'd
+					like to keep. Then click the Slice button below.
+				</p>
 				<button id="slice">Slice</button>
 				<textarea id="output"></textarea>
 			</div>
