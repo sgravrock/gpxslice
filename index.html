@@ -6,19 +6,25 @@
 			  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
 			  crossorigin="">
 		<style>
-			#mapid { height: 100vh; }
+			body {
+				margin: 0;
+				padding: 0;
+			}
+
+			#map { height: 100vh; }
+			#file { display: none; }
+			#map, #file { display: none; }
+			.init #file { display: inline; }
+			.showing-map #map { display: block; }
 		</style>
 	</head>
-	<body>
-		<div id="mapid"></div>
+	<body class="init">
+		<input type="file" accept=".gpx" id="file" />
+		<div id="map"></div>
 		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
 				integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
 				crossorigin=""></script>
 		<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
-		<script>
-            var map = L.map('mapid').setView([51.505, -0.09], 13);
-            var layer = new L.StamenTileLayer("terrain");
-            map.addLayer(layer);
-		</script>
+		<script src="gpxslice.js"></script>
 	</body>
 </html>
