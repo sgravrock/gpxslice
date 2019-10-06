@@ -9,7 +9,9 @@
 	function showMap(track) {
 		document.body.className = "showing-map";
 		var map = L.map('map');
-		map.fitBounds(findBounds(track));
+		var line = L.polyline(track, {color: 'red'});
+		line.addTo(map);
+		map.fitBounds(line.getBounds());
 		var layer = new L.StamenTileLayer("terrain");
 		map.addLayer(layer);
 	}
@@ -27,25 +29,8 @@
 
 	function translatePoint(el) {
 		return {
-			point: {
-				lat: parseFloat(el.getAttribute('lat')),
-				lon: parseFloat(el.getAttribute('lon')),
-			},
-			elevation: parseFloat(el.querySelector('ele').textContent),
-			time: new Date(el.querySelector('time').textContent)
+			lat: parseFloat(el.getAttribute('lat')),
+			lon: parseFloat(el.getAttribute('lon')),
 		};
-	}
-
-	function findBounds(track) {
-		let minLat = 180, maxLat = -180, minLon = 180, maxLon = -180;
-
-		for (let trkpt of track) {
-			minLat = Math.min(minLat, trkpt.point.lat);
-			maxLat = Math.max(maxLat, trkpt.point.lat);
-			minLon = Math.min(minLon, trkpt.point.lon);
-			maxLon = Math.max(maxLon, trkpt.point.lon);
-		}
-
-		return [[minLat, minLon], [maxLat, maxLon]];
 	}
 }());
