@@ -8,24 +8,24 @@
 
 	function init(track) {
 		document.body.className = "showing-map";
-		const map = showMap(track);
+		const map = showMap(track.points);
 
 		const start = document.querySelector("[name=start]")
 		start.value = 0;
-		createMarker(start, track, map);
+		createMarker(start, track.points, map);
 
 		const end = document.querySelector("[name=end]");
-		end.value = track.length - 1;
-		createMarker(end, track, map);
+		end.value = track.points.length - 1;
+		createMarker(end, track.points, map);
 
 		document.querySelector("#slice").addEventListener("click", function() {
 			createSlice(track);
 		});
 	}
 
-	function showMap(track) {
+	function showMap(points) {
 		const map = L.map('map');
-		const line = L.polyline(track, {color: 'red'});
+		const line = L.polyline(points, {color: 'red'});
 		line.addTo(map);
 		map.fitBounds(line.getBounds());
 		map.addLayer(new L.StamenTileLayer("terrain"));
@@ -49,8 +49,19 @@
 	function createSlice(track) {
 		const start = parseInt(document.querySelector("[name=start]").value, 10);
 		const end = parseInt(document.querySelector("[name=end]").value, 10);
-		const slice = track.slice(start, end + 1);
-		document.querySelector("#output").textContent = JSON.stringify(slice);
+		const pointsInSlice = track.pointEls.slice(start, end + 1);
+		const trkseg = track.dom.querySelector("trkseg");
+
+		for (let p of pointsInSlice) {
+			trkseg.appendChild(p);
+		}
+
+		document.querySelector("#output").textContent = 
+			new XMLSerializer().serializeToString(track.dom);
+
+		for (let p of pointsInSlice) {
+			trkseg.removeChild(p);
+		}
 	}
 
 	function parseTrack(src) {
@@ -60,8 +71,21 @@
 			throw new Error('Invalid GPX');
 		}
 
-		const points = dom.querySelectorAll('trkpt');
-		return Array.prototype.map.call(points, translatePoint);
+		if (dom.querySelectorAll('trkseg').length !== 1) {
+			throw new Error("Can't handle multi-segment tracks");
+		}
+
+		const pointEls = Array.prototype.slice.call(dom.querySelectorAll('trkpt'));
+
+		for (let p of pointEls) {
+			p.parentNode.removeChild(p);
+		}
+
+		return {
+			dom: dom,
+			pointEls: pointEls,
+			points: pointEls.map(translatePoint)
+		};
 	}
 
 	function translatePoint(el) {
