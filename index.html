@@ -5,6 +5,7 @@
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
 			  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
 			  crossorigin="">
+		<link rel="stylesheet" href="vendor/nouislider.css" />
 		<style>
 			body {
 				margin: 0;
@@ -25,7 +26,7 @@
 
 			#controls {
 				width: 200px;
-				margin: 0 1em 1em 1em;
+				margin: 1em;
 				display: flex;
 				flex-direction: column;
 			}
@@ -53,9 +54,11 @@
 		</div>
 		<div id="main">
 			<div id="controls">
+				<div id="slider"></div>
 				<p>
-					Drag the markers to select the portion of the track that you'd
-					like to keep. Then click the Slice button below.
+					Drag either the sliders above or the markers on the map
+					to select the portion of the track that you'd like to keep.
+					Then click the Slice button below.
 				</p>
 				<button id="slice">Slice</button>
 				<textarea id="output"></textarea>
@@ -66,6 +69,7 @@
 				integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
 				crossorigin=""></script>
 		<script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
+		<script src="vendor/nouislider.js"></script>
 		<script src="gpxslice.js"></script>
 		<script>
 			gpxslice.boot();

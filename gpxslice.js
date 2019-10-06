@@ -1,7 +1,7 @@
 gpxslice = {
 	boot: function() {
-		document.querySelector("#file").addEventListener("change", function(e) {
-			gpxslice.readFile(e.target.files[0],function(text) {
+		document.querySelector("#file").addEventListener("change", function (e) {
+			gpxslice.readFile(e.target.files[0], function (text) {
 				gpxslice.showEditor(gpxslice.parseTrack(text));
 			});
 		});
@@ -17,40 +17,24 @@ gpxslice = {
 
 	showEditor: function(track) {
 		document.body.className = "showing-map";
-		const map = gpxslice.showMap(track.points);
-
 		let start = 0, end = track.points.length - 1;
-		gpxslice.createMarker(start, track.points, map, function(value) {
-			start = value;
+		const map = new gpxslice.Map(track.points);
+		const slider = new gpxslice.Slider(document.querySelector("#slider"), end);
+
+		map.onRangeChange(function(newStart, newEnd) {
+			start = newStart;
+			end = newEnd;
+			slider.setRange(Math.min(start, end), Math.max(start, end));
 		});
 
-		gpxslice.createMarker(end, track.points, map, function(value) {
-			end = value;
+		slider.onRangeChange(function(newStart, newEnd) {
+			start = newStart;
+			end = newEnd;
+			map.setRange(Math.min(start, end), Math.max(start, end));
 		});
 
 		document.querySelector("#slice").addEventListener("click", function() {
 			gpxslice.showSlice(track, start, end);
-		});
-	},
-
-	showMap: function(points) {
-		const map = L.map('map');
-		const line = L.polyline(points, {color: 'red'});
-		line.addTo(map);
-		map.fitBounds(line.getBounds());
-		map.addLayer(new L.StamenTileLayer("terrain"));
-
-		return map;
-	},
-
-	createMarker: function(initialIndex, track, map, onMove) {
-		const marker = L.marker(track[initialIndex], {draggable: true});
-		marker.addTo(map);
-
-		marker.on("drag", function(e) {
-			const latLng = gpxslice.closestPoint(track, e.latlng);
-			marker.setLatLng(latLng);
-			onMove(track.indexOf(latLng));
 		});
 	},
 
@@ -130,5 +114,83 @@ gpxslice = {
 		});
 
 		return result && result.p;
-	}
+	},
+
+	Map: (function() {
+		function Map(points) {
+			this._points = points;
+			this._map = L.map('map');
+			const line = L.polyline(points, {color: 'red'});
+			line.addTo(this._map);
+			this._map.fitBounds(line.getBounds());
+			this._map.addLayer(new L.StamenTileLayer("terrain"));
+
+			this._start = 0;
+			this._end = points.length - 1;
+			this._startMarker = L.marker(points[this._start], {draggable: true});
+			this._startMarker.addTo(this._map);
+			this._endMarker = L.marker(points[this._end], {draggable: true});
+			this._endMarker.addTo(this._map);
+
+			this._startMarker.on("drag", function(e) {
+				this._start = this._constrainMarker(e);
+
+				if (this._handler) {
+					this._handler(this._start, this._end);
+				}
+			}.bind(this));
+
+			this._endMarker.on("drag", function(e) {
+				this._end = this._constrainMarker(e);
+
+				if (this._handler) {
+					this._handler(this._start, this._end);
+				}
+			}.bind(this));
+		}
+
+		Map.prototype._constrainMarker = function(event) {
+			const latLng = gpxslice.closestPoint(this._points, event.latlng);
+			event.target.setLatLng(latLng);
+			return this._points.indexOf(latLng);
+		};
+
+		Map.prototype.onRangeChange = function(handler) {
+			this._handler = handler;
+		};
+
+		Map.prototype.setRange = function(start, end) {
+			this._start = start;
+			this._end = end;
+			this._startMarker.setLatLng(this._points[start]);
+			this._endMarker.setLatLng(this._points[end]);
+		};
+
+		return Map;
+	})(),
+
+	Slider: (function() {
+		function Slider (element, maxValue) {
+			var el = document.getElementById("slider");
+			this._slider = noUiSlider.create(el, {
+				range: {min: 0, max: maxValue},
+				step: 1,
+				start: [0, maxValue],
+				connect: true,
+				behaviour: 'tap-drag'
+			});
+		}
+
+		Slider.prototype.onRangeChange = function(handler) {
+			this._slider.on('slide', function (values) {
+				handler(values[0], values[1]);
+			});
+		};
+
+		Slider.prototype.setRange = function(start, end) {
+			this._slider.set([start, end]);
+		};
+
+		return Slider;
+	})(),
 };
