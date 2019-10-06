@@ -11,8 +11,11 @@
 				padding: 0;
 			}
 
-			#file { display: none; }
-			.init #file { display: inline; }
+			#file-area { display: none; }
+			.init #file-area {
+				display: block;
+				margin: 0 1em 1em 1em;
+			}
 
 			#main { display: none; }
 			.showing-map #main {
@@ -20,15 +23,34 @@
 				height: 100vh;
 			}
 
-			#controls { width: 200px; }
+			#controls {
+				width: 200px;
+				margin: 0 1em 1em 1em;
+				display: flex;
+				flex-direction: column;
+			}
 
 			#map { flex: 1; }
 
-			button, textarea { display: block; }
+			button { display: block; }
+
+			#output {
+				display: none;
+			}
+
+			#output.has-contents {
+				display: block;
+				flex: 1;
+				width: 100%;
+				resize: none;
+			}
 		</style>
 	</head>
 	<body class="init">
-		<input type="file" accept=".gpx" id="file" />
+		<div id="file-area">
+			<p>Select a GPX file from your computer that you'd like to edit.</p>
+			<input type="file" accept=".gpx" id="file" />
+		</div>
 		<div id="main">
 			<div id="controls">
 				<p>

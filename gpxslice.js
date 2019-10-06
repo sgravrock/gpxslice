@@ -48,8 +48,9 @@ gpxslice = {
 	},
 
 	showSlice: function(track, startIx, endIx) {
-		document.querySelector("#output").textContent =
-			gpxslice.createSlice(track, startIx, endIx);
+		const output = document.querySelector("#output");
+		output.textContent = gpxslice.createSlice(track, startIx, endIx);
+		output.classList.add("has-contents");
 	},
 
 	createSlice: function(track, startIx, endIx) {
