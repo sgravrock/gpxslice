@@ -1,11 +1,18 @@
 gpxslice = {
 	boot: function() {
 		document.querySelector("#file").addEventListener("change", function(e) {
-			e.target.files[0].text()
-				.then(function(text) {
-					gpxslice.showEditor(gpxslice.parseTrack(text));
-				});
+			gpxslice.readFile(e.target.files[0],function(text) {
+				gpxslice.showEditor(gpxslice.parseTrack(text));
+			});
 		});
+	},
+
+	readFile: function(file, onComplete) {
+		const reader = new FileReader();
+		reader.onload = function(event) {
+			onComplete(event.target.result);
+		};
+		reader.readAsText(file);
 	},
 
 	showEditor: function(track) {
@@ -63,16 +70,16 @@ gpxslice = {
 		const pointsInSlice = track.pointEls.slice(startIx, endIx + 1);
 		const trkseg = track.dom.querySelector("trkseg");
 
-		for (let p of pointsInSlice) {
-			trkseg.appendChild(p);
+		for (let i = 0; i < pointsInSlice.length; i++) {
+			trkseg.appendChild(pointsInSlice[i]);
 		}
 
 		const xml = new XMLSerializer()
 			.serializeToString(track.dom)
 			.replace(/\n\s*\n/m, '\n'); // collapse adjacent blank lines
 
-		for (let p of pointsInSlice) {
-			trkseg.removeChild(p);
+		for (let i = 0; i < pointsInSlice.length; i++) {
+			trkseg.removeChild(pointsInSlice[i]);
 		}
 
 		return xml;
@@ -91,8 +98,8 @@ gpxslice = {
 
 		const pointEls = Array.prototype.slice.call(dom.querySelectorAll('trkpt'));
 
-		for (let p of pointEls) {
-			p.parentNode.removeChild(p);
+		for (let i = 0; i < pointEls.length; i++) {
+			pointEls[i].parentNode.removeChild(pointEls[i]);
 		}
 
 		return {
