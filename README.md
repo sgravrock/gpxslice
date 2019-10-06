@@ -1,6 +1,6 @@
 gpxslice lets you trim unwanted parts from the start or the end of a GPX file.
 
-To use it:
+To use it, either go to <https://www.panix.com/~sdg/gpxslice/> or:
 
 1. Open index.html in a web browser (no need for a server).
 2. Choose a GPX file.
