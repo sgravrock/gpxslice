@@ -34,14 +34,28 @@ gpxslice = {
 		});
 
 		document.querySelector("#slice").addEventListener("click", function() {
-			gpxslice.showSlice(track, start, end);
+			gpxslice.saveSlice(track, start, end);
 		});
 	},
 
-	showSlice: function(track, startIx, endIx) {
-		const output = document.querySelector("#output");
-		output.textContent = gpxslice.createSlice(track, startIx, endIx);
-		output.classList.add("has-contents");
+	saveSlice: function(track, startIx, endIx) {
+		const gpx = gpxslice.createSlice(track, startIx, endIx);
+		const blob = new Blob([gpx], {type: "application/xml;charset=utf-8"});
+
+		if (navigator.msSaveBlob) {
+			// IE
+			navigator.msSaveBlob(blob, 'slice.gpx');
+		} else {
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(blob);
+			a.download = "slice.gpx";
+
+			const event = document.createEvent("MouseEvents");
+			event.initMouseEvent("click", true, true);
+			a.dispatchEvent(event);
+
+			URL.revokeObjectURL(a.href);
+		}
 	},
 
 	createSlice: function(track, startIx, endIx) {
