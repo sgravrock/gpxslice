@@ -21,14 +21,18 @@
 			#main { display: none; }
 			.showing-map #main {
 				display: flex;
+				flex-direction: column;
 				height: 100vh;
 			}
 
 			#controls {
-				width: 200px;
 				margin: 1em;
 				display: flex;
 				flex-direction: column;
+			}
+
+			#slider {
+				margin: 0 1em;
 			}
 
 			#map { flex: 1; }
@@ -42,6 +46,7 @@
 			<input type="file" accept=".gpx" id="file" />
 		</div>
 		<div id="main">
+			<div id="map"></div>
 			<div id="controls">
 				<div id="slider"></div>
 				<p>
@@ -51,7 +56,6 @@
 				</p>
 				<button id="slice">Slice</button>
 			</div>
-			<div id="map"></div>
 		</div>
 		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
 				integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
